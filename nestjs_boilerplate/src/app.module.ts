@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { LoggerMiddleware } from './utils/middlewares/logger.middleware';
@@ -9,15 +10,19 @@ import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: '',
-      password: '',
-      database: '',
-      synchronize: true,
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule.forRoot({ envFilePath: 'db.env' })],
+      useFactory: (configService: ConfigService) => ({
+        type: 'postgres',
+        host: configService.get('DB_HOST'),
+        port: +configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_NAME'),
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
+      inject: [ConfigService]
     }),
     UsersModule, LoggerModule],
   controllers: [AppController],
