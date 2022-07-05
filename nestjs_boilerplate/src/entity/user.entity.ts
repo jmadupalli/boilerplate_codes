@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, BeforeInsert } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/auth/roles/role.enum';
 
 @Entity({ name: 'users' })
 export class User {
@@ -18,8 +19,8 @@ export class User {
     @Column({ select: false })
     password: string;
 
-    @Column({ default: 'user' })
-    role: string;
+    @Column("varchar", { default: [Role.User], array: true })
+    roles: Role[];
 
     @Column({ default: true })
     isActive: boolean;

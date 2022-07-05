@@ -7,6 +7,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { LoggerModule } from './logger/logger.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
+import { RolesGuard } from './auth/roles/roles.guard';
 
 @Module({
   imports: [
@@ -24,9 +28,18 @@ import { LoggerModule } from './logger/logger.module';
       }),
       inject: [ConfigService]
     }),
-    UsersModule, LoggerModule],
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10
+    }),
+    UsersModule, LoggerModule, AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    },
+    AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

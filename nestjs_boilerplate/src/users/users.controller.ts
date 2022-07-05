@@ -1,5 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
+import { Role } from 'src/auth/roles/role.enum';
+import { Roles } from 'src/auth/roles/roles.decorator';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { User } from 'src/auth/user.decorator';
 import { RegisterDTO } from './dto/register-dto';
 import { UsersService } from './users.service';
 
@@ -13,8 +18,11 @@ export class UsersController {
         return await this.usersService.register(userData);
     }
 
-    @Post('login')
-    async userLogin() {
-        return 'Logged in';
+    @Get('getUser')
+    @UseGuards(JAuthGuard, RolesGuard)
+    @Roles(Role.Admin)
+    @ApiBearerAuth()
+    async getUser(@User() user: number) {
+        return user;
     }
 }
