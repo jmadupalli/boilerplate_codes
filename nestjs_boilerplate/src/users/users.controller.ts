@@ -20,9 +20,8 @@ export class UsersController {
 
     @Get('getUser')
     @UseGuards(JAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
     @ApiBearerAuth()
-    async getUser(@User() user: number) {
+    async getUser(@User() user) {
         return user;
     }
 }

@@ -14,8 +14,8 @@ export class AuthService {
         const user = await this.usersService.validateAndFindUser(dto.username.toLowerCase(), dto.password);
         if (!user)
             throw new HttpException('Invalid username/password, Please try again.', HttpStatus.FORBIDDEN);
-        console.log(user);
         return {
+            ...user,
             access_token: this.jwtService.sign({ ...user })
         }
     }

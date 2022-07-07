@@ -19,7 +19,7 @@ export class User {
     @Column({ select: false })
     password: string;
 
-    @Column("varchar", { default: [Role.User], array: true })
+    @Column("simple-array", { default: [Role.User] })
     roles: Role[];
 
     @Column({ default: true })
