@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 import { BackendService } from 'src/app/services/backend.service';
@@ -14,6 +15,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private backend: BackendService,
+    private router: Router,
     private toastr: ToastrService
   ) { }
 
@@ -23,6 +25,10 @@ export class LoginComponent implements OnInit {
   })
 
   ngOnInit(): void {
+    if (this.backend.isLoggedIn) {
+      this.toastr.info("You're already logged in");
+      this.router.navigate(['dashboard']);
+    }
   }
 
   login() {
@@ -30,8 +36,13 @@ export class LoginComponent implements OnInit {
       return;
     this.backend.login(this.form.value).subscribe({
       next: (resp) => {
+        localStorage.setItem('access_token', resp['access_token']);
+        delete resp['access_token'];
+        localStorage.setItem('user_profile', JSON.stringify(resp));
+        this.backend.user = resp;
         this.toastr.success('Login Successful');
-        console.log(resp);
+        this.router.navigate(['dashboard']);
+
       },
       error: (err) => {
         this.toastr.error(err.error.message);
