@@ -3,6 +3,6 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getHello(): string {
-    return 'NestJS Base Project v0.1, uses Fastify';
+    return 'NestJS Base Project v0.1, uses Express';
   }
 }
